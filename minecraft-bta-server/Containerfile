@@ -1,17 +1,20 @@
 FROM docker.io/almalinux/9-minimal:latest
+# i might change to alpine...? or plain openjdk...
+
 LABEL source="https://github.com/herzeleid02/containerfiles"
+
+ARG serverdir="/opt/minecraft-bta-server"
 
 # its hardcoded but whatever... well figure out something
 #ARG jarname="better-than-adventure-7.1.Prerelease.1a-server.jar"
+# do not change to headless -- world generation doesnt work (i tried)
+RUN microdnf --setopt=install_weak_deps=0 install -y java-1.8.0-openjdk
 
-RUN 'echo "install_weak_deps=False" >> /etc/dnf/dnf.conf'
-RUN 'dnf install java-1.8.0-openjdk-headless'
+RUN mkdir -p ${serverdir}
 
-RUN 'mkdir /opt/minecraft-bta-server'
+RUN curl -LO https://github.com/Better-than-Adventure/bta-download-repo/releases/download/v7.1-prerelease-1a/better-than-adventure-7.1.Prerelease.1a-server.jar --output-dir /opt/
+#RUN wget https://github.com/Better-than-Adventure/bta-download-repo/releases/download/v7.1-prerelease-1a/better-than-adventure-7.1.Prerelease.1a-server.jar --directory-prefix=/opt/
 
-RUN 'curl -O https://github.com/Better-than-Adventure/bta-download-repo/releases/download/v7.1-prerelease-1a/better-than-adventure-7.1.Prerelease.1a-server.jar --output-dir /opt/'
+WORKDIR ${serverdir}
 
-WORKDIR "/opt/minecraft-bta-server/"
-
-ENTRYPOINT ["java -jar /opt/better-than-adventure-7.1.Prerelease.1a-server.jar"]
-
+ENTRYPOINT ["java", "-jar", "/opt/better-than-adventure-7.1.Prerelease.1a-server.jar"]
