@@ -1,0 +1,14 @@
+FROM docker.io/almalinux:9
+
+LABEL description="personal tsh client"
+LABEL mainainer="github.com/allpower2slaves"
+
+ENV TELEPORT_EDITION="oss"
+ENV TELEPORT_VERSION="13.4.6"
+
+RUN curl 'https://cdn.teleport.dev/install-v16.1.1.sh' | bash -s "$TELEPORT_VERSION" "$TELEPORT_EDITION" || dnf install -y teleport
+
+RUN useradd -m tsh
+USER tsh
+
+CMD teleport
